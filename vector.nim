@@ -1,8 +1,9 @@
-import std/math    
+import std/[math, random]    
 
 type 
     ## Define a generic vector type with a fixed size and element type.
     Vec*[N: static[int], V] = array[N, V]
+    DynVec*[V] = seq[V]
 
     ## Define vector type aliases for common size and element type vectors.
     Vec2*[V] = Vec[2, V]
@@ -14,6 +15,34 @@ type
     Vec2f* = Vec2[float]
     Vec3f* = Vec3[float]
     Vec4f* = Vec4[float]
+
+
+proc zero*[N: static[int], T](_: typedesc[Vec[N, T]]): Vec[N, T] = 
+    for i in 0..<N:
+        result[i] = T(0)
+
+proc fill*[N: static[int], T](_: typedesc[Vec[N, T]], val: T): Vec[N, T] = 
+    for i in 0..<N:
+        result[i] = val
+
+proc rand*[N: static[int], T](_: typedesc[Vec[N, T]], max: T = T(1)): Vec[N, T] = 
+    for i in 0..<N:
+        result[i] = rand(max)
+
+proc cat*[M, N: static[int], T](a: Vec[M, T], b: Vec[N, T]): Vec[M + N, T] =
+    for i in 0..<M:
+        result[i] = a[i]
+    for i in 0..<N:
+        result[i + M] = b[i]
+
+
+# iterator items*[N: static[int], V](v: Vec[N, V]): auto =
+#     for i in 0..<N:
+#         yield v[i]
+
+# iterator pairs*[N: static[int], V](v: Vec[N, V]): auto =
+#     for i in 0..<N:
+#         yield (i, v[i])
 
 
 template VecOp(op: untyped) =
@@ -104,24 +133,6 @@ VecBoolOp(`<`)
 VecBoolOp(`>=`)
 VecBoolOp(`<=`)
 
-
-proc zero*[N: static[int], T](_: typedesc[Vec[N, T]]): Vec[N, T] = 
-    for i in 0..<N:
-        result[i] = T(0)
-
-proc fill*[N: static[int], T](_: typedesc[Vec[N, T]], val: T): Vec[N, T] = 
-    for i in 0..<N:
-        result[i] = val
-
-proc rand*[N: static[int], T](_: typedesc[Vec[N, T]], max: T): Vec[N, T] = 
-    for i in 0..<N:
-        result[i] = rand(max)
-
-proc cat*[M, N: static[int], T](a: Vec[M, T], b: Vec[N, T]): Vec[M + N, T] =
-    for i in 0..<M:
-        result[i] = a[i]
-    for i in 0..<N:
-        result[i + M] = b[i]
 
 proc dot2*[N: static[int], T](a, b: Vec[N, T]): T =
     for i in 0..<N:
